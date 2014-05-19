@@ -278,4 +278,22 @@ public class VerleihServiceImpl extends AbstractObservableService implements
         return result;
     }
 
+	@Override
+	public void vormerken(Kunde kunde, List<Medium> medien) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void vormerkungStornieren(Kunde kunde, List<Medium> medien) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean istVormerkenMoeglich(Kunde kunde, List<Medium> medien) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }
