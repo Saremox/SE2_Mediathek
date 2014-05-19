@@ -145,22 +145,5 @@ public class VerleihServiceImplTest
                 Collections.singletonList(_medienListe.get(2)), _datum);
         assertFalse(ereignisse[0]);
     }
-    
-    @Test
-    public void testVormerkenDoppelt()
-    {
-    	assertTrue(_service.istVormerkenMoeglich(_kunde, _medienListe));
-    	_service.vormerken(_kunde, _medienListe);
-    	assertFalse(_service.istVormerkenMoeglich(_kunde, _medienListe));
-    }
-    
-    @Test
-    public void testVormerkenVerleihen()
-    {
-    	assertTrue(_service.istVormerkenMoeglich(_vormerkkunde, _medienListe));
-    	_service.vormerken(_vormerkkunde, _medienListe);
-    	
-    	assertTrue(_service.istVerleihenMoeglich(_kunde, _medienListe));
-    }
 
 }
