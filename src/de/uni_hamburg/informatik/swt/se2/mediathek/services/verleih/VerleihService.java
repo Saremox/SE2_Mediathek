@@ -42,6 +42,10 @@ public interface VerleihService extends ObservableService
      */
     void verleiheAn(Kunde kunde, List<Medium> medien, Datum ausleihDatum)
             throws ProtokollierException;
+    
+    void vormerken(Kunde kunde, List<Medium> medien);
+    void vormerkungStornieren(Kunde kunde, List<Medium> medien);
+    void istVormerkenMoeglich(Kunde kunde, List<Medium> medien);
 
     /**
      * Prüft ob die ausgewählten Medium für den Kunde ausleihbar sind
