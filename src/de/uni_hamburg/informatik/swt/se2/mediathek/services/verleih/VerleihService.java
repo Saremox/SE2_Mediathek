@@ -43,9 +43,42 @@ public interface VerleihService extends ObservableService
     void verleiheAn(Kunde kunde, List<Medium> medien, Datum ausleihDatum)
             throws ProtokollierException;
     
+    /**
+     * Merke ausgewaehlte Medien fuer den Kunden vor sofern dies moeglich ist.
+     * @param kunde Ein Kunde, der fuer die gewaehlten Medien vorgemerkt werden soll
+     * @param medien Medien die fuer den Kunden vorgemerkt werden sollen
+     * 
+     * @require kundeImBestand(kunde)
+     * @require medien != null
+     * 
+     * @ensure
+     */
     void vormerken(Kunde kunde, List<Medium> medien);
+    
+    /**
+     * Storniert die Vormerkung fuer den kunden von den Ausgewaehlten kunden
+     * @param kunde Ein Kunde, der von der Vormerkerliste gestrichen werden soll
+     * @param medien Medien fuer die die Vormerkung von kunde storniert werden soll
+     * 
+     * @require kundeImBestand(kunde)
+     * @require medien != null
+     * 
+     * @ensure
+     */
     void vormerkungStornieren(Kunde kunde, List<Medium> medien);
-    void istVormerkenMoeglich(Kunde kunde, List<Medium> medien);
+    
+    /**
+     * Prueft ob die ausgewaehlten Medien fuer den kunde vormerkbar sind
+     * @param kunde Ein Kunde, fuer den geprueft werden soll ob er die gewaehlten Medien vormerken darf
+     * @param medien Medien fuer die geprueft werden soll ob diese vorgemerkt werden koennen vom kunden
+     * @return true wenn ausgewaehlte Medien fuer den Kunden vormerkbar sind. False wenn nicht
+     * 
+     * @require kundeImBestand(kunde)
+     * @require medien != null
+     * 
+     * @ensure
+     */
+    boolean istVormerkenMoeglich(Kunde kunde, List<Medium> medien);
 
     /**
      * Prüft ob die ausgewählten Medium für den Kunde ausleihbar sind
