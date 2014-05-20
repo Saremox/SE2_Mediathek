@@ -155,11 +155,30 @@ public class VerleihServiceImplTest
     }
     
     @Test
-    public void testVormerkenVerleihen()
+    public void testVormerkenVerleihen() throws ProtokollierException
     {
     	assertTrue(_service.istVormerkenMoeglich(_vormerkkunde, _medienListe));
     	_service.vormerken(_vormerkkunde, _medienListe);
     	
-    	assertTrue(_service.istVerleihenMoeglich(_kunde, _medienListe));
+    	assertTrue(_service.istVerleihenMoeglich(_vormerkkunde, _medienListe));
+    	_service.verleiheAn(_vormerkkunde, _medienListe, _datum);
+    	for(Medium m : _medienListe)
+    	{
+    		assertTrue(_service.istVerliehenAn(_vormerkkunde, m));
+    	}
+    }
+    
+    @Test
+    public void testErsterVormerkerDarfNurAusleihen() throws ProtokollierException
+    {
+    	assertTrue(_service.istVormerkenMoeglich(_vormerkkunde, _medienListe));
+    	_service.vormerken(_vormerkkunde, _medienListe);
+    	
+    	assertFalse(_service.istVerleihenMoeglich(_kunde, _medienListe));
+    	_service.verleiheAn(_vormerkkunde, _medienListe, _datum);
+    	for(Medium m : _medienListe)
+    	{
+    		assertFalse(_service.istVerliehenAn(_kunde, m));
+    	}
     }
 }
