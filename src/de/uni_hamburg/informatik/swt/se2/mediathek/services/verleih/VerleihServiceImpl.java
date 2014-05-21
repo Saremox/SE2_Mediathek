@@ -8,6 +8,7 @@ import java.util.Map;
 import de.uni_hamburg.informatik.swt.se2.mediathek.fachwerte.Datum;
 import de.uni_hamburg.informatik.swt.se2.mediathek.materialien.Kunde;
 import de.uni_hamburg.informatik.swt.se2.mediathek.materialien.Verleihkarte;
+import de.uni_hamburg.informatik.swt.se2.mediathek.materialien.VormerkKarte;
 import de.uni_hamburg.informatik.swt.se2.mediathek.materialien.medien.Medium;
 import de.uni_hamburg.informatik.swt.se2.mediathek.services.AbstractObservableService;
 import de.uni_hamburg.informatik.swt.se2.mediathek.services.kundenstamm.KundenstammService;
@@ -29,6 +30,7 @@ public class VerleihServiceImpl extends AbstractObservableService implements
      * die Angabe des Mediums möglich. Beispiel: _verleihkarten.get(medium)
      */
     private Map<Medium, Verleihkarte> _verleihkarten;
+    private Map<Medium, VormerkKarte> _vormerkkarten;
 
     /**
      * Der Medienbestand.
@@ -64,6 +66,7 @@ public class VerleihServiceImpl extends AbstractObservableService implements
         assert medienbestand != null : "Vorbedingung verletzt: medienbestand  != null";
         assert initialBestand != null : "Vorbedingung verletzt: initialBestand  != null";
         _verleihkarten = erzeugeVerleihkartenBestand(initialBestand);
+        _vormerkkarten = new HashMap<Medium, VormerkKarte>();
         _kundenstamm = kundenstamm;
         _medienbestand = medienbestand;
         _protokollierer = new VerleihProtokollierer();
@@ -102,6 +105,19 @@ public class VerleihServiceImpl extends AbstractObservableService implements
         assert kundeImBestand(kunde) : "Vorbedingung verletzt: kundeImBestand(kunde)";
         assert medienImBestand(medien) : "Vorbedingung verletzt: medienImBestand(medien)";
 
+        for(Medium medium : medien)
+        {
+            if(_vormerkkarten.containsKey(medium))
+            {
+                // Wenn Vormerkkarte vorhanden pruefe ob der erste in der Liste ausleihen will
+                VormerkKarte karte = _vormerkkarten.get(medium);
+                if(!karte.istErsterVormerker(kunde))
+                {
+                    return false;
+                }
+            }
+        }
+        
         return sindAlleNichtVerliehen(medien);
     }
 
@@ -190,7 +206,7 @@ public class VerleihServiceImpl extends AbstractObservableService implements
         assert istVerleihenMoeglich(kunde, medien) : "Vorbedingung verletzt:  istVerleihenMoeglich(kunde, medien)";
 
         for (Medium medium : medien)
-        {
+        {         
             Verleihkarte verleihkarte = new Verleihkarte(kunde, medium,
                     ausleihDatum);
 
@@ -280,20 +296,65 @@ public class VerleihServiceImpl extends AbstractObservableService implements
 
 	@Override
 	public void vormerken(Kunde kunde, List<Medium> medien) {
-		// TODO Auto-generated method stub
+		if(!istVormerkenMoeglich(kunde, medien))
+		{
+		    return;
+		}
 		
+	    for (Medium medium : medien)
+        {
+	        if(!_vormerkkarten.containsKey(medium))
+	        {
+	            // Fuer das Medium ist keine Vormerkkarte vorhanden
+	            VormerkKarte karte = new VormerkKarte(medium);
+	            _vormerkkarten.put(medium, karte);
+	        }
+          
+	        // holt Vormerkkarte fuer das Medium und fuegt den Kunden hinzu
+	        VormerkKarte karte = _vormerkkarten.get(medium);
+	        karte.fuegeHinzu(kunde);
+        }
+        // XXX Was passiert wenn das Protokollieren mitten in der Schleife
+        // schief geht? informiereUeberAenderung in einen finally Block?
+        informiereUeberAenderung();
 	}
 
 	@Override
 	public void vormerkungStornieren(Kunde kunde, List<Medium> medien) {
-		// TODO Auto-generated method stub
+
 		
 	}
+	
+	
 
 	@Override
 	public boolean istVormerkenMoeglich(Kunde kunde, List<Medium> medien) {
-		// TODO Auto-generated method stub
-		return false;
+	    if(kunde == null || medien == null)
+	    {
+	        return false;
+	    }
+	    for(Medium medium : medien)
+	    {
+	        if(_vormerkkarten.containsKey(medium))
+	        {
+	            VormerkKarte karte = _vormerkkarten.get(medium);
+	            if(!karte.istVormerkenMoeglich(kunde))
+	            {
+	                return false;
+	            }
+	        }
+	    }
+		return true;
 	}
+
+    @Override
+    public Kunde getVormerker(int position, Medium medium)
+    {
+        if(_vormerkkarten.containsKey(medium))
+        {
+            return _vormerkkarten.get(medium).getEntleiher(position);
+        }
+        return null;
+    }
 
 }

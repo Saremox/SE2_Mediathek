@@ -3,6 +3,8 @@ package de.uni_hamburg.informatik.swt.se2.mediathek.materialien;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.uni_hamburg.informatik.swt.se2.mediathek.materialien.medien.Medium;
+
 /**
  * Simuliert eine Pappkarte an einem Medium, die eine Liste von Vormerkern zeigt
  * 
@@ -11,19 +13,21 @@ import java.util.List;
 public class VormerkKarte 
 {
 	
-	private List<Kunde> _kundenliste;
+	private LinkedList<Kunde> _kundenliste;
+	private final Medium _medium; 
 	
 	/**
 	 * Initialisiert eine neue VormerkKarte
 	 */
-	public VormerkKarte()
+	public VormerkKarte(Medium neuMedium)
 	{
-		_kundenliste = new LinkedList<>();		
+		_kundenliste = new LinkedList<>();
+		_medium = neuMedium;
 	}	
-	
-	/**
+
+    /**
 	 * Prüft, ob das Vormerken für einen Kunden möglich ist
-	 * wichtig ist, dass die Kundenliste nihct voll ist,
+	 * wichtig ist, dass die Kundenliste nicht voll ist,
 	 * und dass sie nicht bereits den Kunden enthält
 	 * 
 	 * @param kunde der Kunde, der vormerken will
@@ -38,6 +42,15 @@ public class VormerkKarte
 		assert kunde != null : "Kunde darf kein Nullpointer sein!";
 				
 		return _kundenliste.size() < 3 && !_kundenliste.contains(kunde);
+	}
+	
+	public boolean istErsterVormerker(Kunde kunde)
+	{
+	    if(_kundenliste.peek().getKundennummer() == kunde.getKundennummer())
+	    {
+	        return true;
+	    }
+	    return false;
 	}
 	
 	/**
@@ -86,4 +99,34 @@ public class VormerkKarte
 			System.err.print("Kunde kann nciht entfernt werden!");
 		}
 	}
+	
+	/**
+	 * Gibt das Medium, auf das sich die VormerkKarte bezieht 
+	 * 
+	 * @require _medium != null
+	 * 
+	 * @return das Medium, an dem die karte klebt
+	 */
+	public Medium gibMedium()
+	{
+		assert _medium != null : "Vorbedingung nicht erfüllt! _medium nicht ungleich null!";
+		return _medium;
+	}
+
+	/**
+	 * Gibt den entleiher 
+	 * @param position
+	 * @return
+	 */
+    public Kunde getEntleiher(int position)
+    {
+        if(position < _kundenliste.size() && position >= 0)
+        {
+            return _kundenliste.get(position);
+        }
+        else
+        {
+            return null;
+        }
+    }
 }

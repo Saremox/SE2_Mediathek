@@ -265,4 +265,5 @@ public interface VerleihService extends ObservableService
      */
     Verleihkarte getVerleihkarteFuer(Medium medium);
 
+    Kunde getVormerker(int position, Medium medium);
 }
