@@ -205,12 +205,14 @@ public class VerleihServiceImpl extends AbstractObservableService implements
         assert ausleihDatum != null : "Vorbedingung verletzt: ausleihDatum != null";
         assert istVerleihenMoeglich(kunde, medien) : "Vorbedingung verletzt:  istVerleihenMoeglich(kunde, medien)";
 
+        vormerkungStornieren(kunde, medien);
         for (Medium medium : medien)
         {         
             Verleihkarte verleihkarte = new Verleihkarte(kunde, medium,
                     ausleihDatum);
 
             _verleihkarten.put(medium, verleihkarte);
+            
             _protokollierer.protokolliere(
                     VerleihProtokollierer.EREIGNIS_AUSLEIHE, verleihkarte);
         }
@@ -321,21 +323,29 @@ public class VerleihServiceImpl extends AbstractObservableService implements
 
 	@Override
 	public void vormerkungStornieren(Kunde kunde, List<Medium> medien) {
-
-		
+		assert medien != null : "Vorbedingung verletzt: medien != null"; 
+		assert kunde != null : "Vorbedingung verletzt: kunde != null"; 
+		for(Medium medium : medien)
+		{
+			if(_vormerkkarten.containsKey(medium))
+	        {
+	            VormerkKarte karte = _vormerkkarten.get(medium);
+	            karte.entferne(kunde);
+	        }
+		}
 	}
-	
-	
 
 	@Override
 	public boolean istVormerkenMoeglich(Kunde kunde, List<Medium> medien) {
-	    if(kunde == null || medien == null)
-	    {
-	        return false;
-	    }
+		assert medien != null : "Vorbedingung verletzt: medien != null"; 
+		assert kunde != null : "Vorbedingung verletzt: kunde != null"; 
 	    for(Medium medium : medien)
 	    {
-	        if(_vormerkkarten.containsKey(medium))
+	    	if(istVerliehenAn(kunde, medium))
+	    	{
+	    		return false;
+	    	}
+	    	if(_vormerkkarten.containsKey(medium))
 	        {
 	            VormerkKarte karte = _vormerkkarten.get(medium);
 	            if(!karte.istVormerkenMoeglich(kunde))
@@ -350,7 +360,9 @@ public class VerleihServiceImpl extends AbstractObservableService implements
     @Override
     public Kunde getVormerker(int position, Medium medium)
     {
-        if(_vormerkkarten.containsKey(medium))
+    	assert medium != null : "Vorbedingung verletzt: medium != null"; 
+    	assert position >= 0 : "Vorbedingung verletzt: position > 0";
+    	if(_vormerkkarten.containsKey(medium))
         {
             return _vormerkkarten.get(medium).getEntleiher(position);
         }
