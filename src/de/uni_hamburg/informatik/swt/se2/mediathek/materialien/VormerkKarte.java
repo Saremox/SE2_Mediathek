@@ -79,6 +79,7 @@ public class VormerkKarte
 	 * @param kunde der Kunde, der vormerken will
 	 * 
 	 * @require kunde != null;
+	 * @require 
 	 */
 	public void fuegeHinzu(Kunde kunde) 
 	{
@@ -99,10 +100,12 @@ public class VormerkKarte
 	 * @param kunde der Kunde, der entfernt wird
 	 * 
 	 * @require kunde != null
+	 * @require _kundenliste.contains(kunde)
 	 */
 	public void entferne(Kunde kunde)
 	{
 		assert kunde != null : "Vorbedingung verletzt: kunde != null";
+		assert _kundenliste.contains(kunde) : "Vorbedingung verletzt : _kundenliste.contains(kunde)";
 		
 		if (!_kundenliste.remove(kunde))
 		{
