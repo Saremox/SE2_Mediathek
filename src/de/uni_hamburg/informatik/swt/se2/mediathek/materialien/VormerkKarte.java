@@ -44,8 +44,18 @@ public class VormerkKarte
 		return _kundenliste.size() < 3 && !_kundenliste.contains(kunde);
 	}
 	
+	/**
+	 * Prüft ob der übergebene Kunde der erste in der Vormerkerliste ist
+	 * 
+	 * @param kunde für den geprüft werden soll ob dieser an der ersten Position der Liste steht
+	 * 
+	 * @require kunde != null
+	 * 
+	 * @return true wenn kunde der erste Vormerker in der Liste ist. Sonst False
+	 */
 	public boolean istErsterVormerker(Kunde kunde)
 	{
+	    assert kunde != null : "Kunde darf kein Nullpointer sein!";
 	    if(_kundenliste.peek().getKundennummer() == kunde.getKundennummer())
 	    {
 	        return true;
